@@ -1,0 +1,6 @@
+node_modules
+dist
+.env
+server/uploads/resumes/*
+!server/uploads/resumes/.gitkeep
+server/data/uploads.json

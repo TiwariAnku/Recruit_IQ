@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root { color-scheme: light; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body { @apply bg-cream font-sans text-sm text-ink-body antialiased; background-image: radial-gradient(900px 500px at 90% -10%, rgba(241,227,208,.4), transparent); }
+  #root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  ::selection { background: #EBD5C1; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: #dccfbd; border-radius: 9px; }
+}
