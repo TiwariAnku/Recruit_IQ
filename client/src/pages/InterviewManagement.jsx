@@ -20,6 +20,7 @@ export default function InterviewManagement() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <StatusBadge v={i.st} /><StatusBadge v={i.fb} />
+          {i.st == 'Completed' && (i.fb == 'Pending' ? <Btn sm v="pr" onClick={() => S.openFeedback(i.id)}>Give feedback</Btn> : S.FB.some((f) => f.interviewId === i.id) && <Btn sm onClick={() => S.viewFeedback(S.FB.find((f) => f.interviewId === i.id).id)}>View feedback</Btn>)}
           {i.st == 'Scheduled' && <><Btn sm onClick={() => S.resched(i.id)}>Reschedule</Btn><Btn sm onClick={() => S.cancel(i.id)}>Cancel</Btn><Btn sm v="pr" onClick={() => S.complete(i.id)}>Mark Completed</Btn></>}
         </div>
       </div>

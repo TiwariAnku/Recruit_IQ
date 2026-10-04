@@ -24,7 +24,7 @@ export default function HRHandover() {
         ))}
       </div>
       <Section title="Priority tasks to pick up" sub="Highest-impact items for whoever covers">
-        {pri.map((a) => <div key={a.k} className="flex items-center justify-between border-t border-cream-200 py-3 first:border-0"><span className="flex items-center gap-2 text-ink"><ClipboardCheck size={16} className="text-nude-dark" />{a.t} — <b>{nm(a.r)}</b></span><StatusBadge v={a.g == 'Urgent' ? 'High' : 'Medium'} /></div>)}
+        {pri.map((a) => <div key={a.k} className="flex items-center justify-between border-t border-cream-200 py-3 first:border-0"><span className="flex items-center gap-2 text-ink"><ClipboardCheck size={16} className="text-nude-dark" />{a.t} — <b>{nm(a.r)}</b></span><span className="flex items-center gap-2">{a.t === 'Submit interview feedback' && <Btn sm v="pr" onClick={a.do}>Give feedback</Btn>}<StatusBadge v={a.g == 'Urgent' ? 'High' : 'Medium'} /></span></div>)}
         {!pri.length && <p className="flex items-center gap-2 py-3 text-ink-muted"><ListChecks size={16} /> No priority tasks.</p>}
       </Section>
       <WorkQueue hr={h} key={h} />

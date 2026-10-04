@@ -16,6 +16,7 @@ export default function Sidebar() {
             {({ isActive }) => (<>
               {isActive && <span className="absolute -left-3 top-2 h-[calc(100%-16px)] w-1 rounded-r bg-nude-300" />}
               <Icon size={18} className="flex-none" /><span className="hidden lg:inline">{label}</span>
+              {path === 'feedback' && S.I.some((i) => i.st === 'Completed' && i.fb === 'Pending') && <span className="ml-auto hidden rounded-full bg-nude px-2 py-px text-[11px] font-bold text-ink lg:inline">{S.I.filter((i) => i.st === 'Completed' && i.fb === 'Pending').length}</span>}
               {path === 'actions' && S.acts.length > 0 && <span className="ml-auto hidden rounded-full bg-nude px-2 py-px text-[11px] font-bold text-ink lg:inline">{S.acts.length}</span>}
             </>)}
           </NavLink>

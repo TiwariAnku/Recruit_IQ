@@ -22,7 +22,7 @@ export default function Topbar() {
   }, []);
 
   const items = [
-    ...S.acts.map((a) => ({ k: 'a' + a.k, kind: a.g === 'Urgent' ? 'Urgent' : 'Task', title: a.t, sub: (a.r ? nm(a.r) : 'Manager') + ' · Due ' + a.due, to: 'actions' })),
+    ...S.acts.map((a) => ({ k: 'a' + a.k, kind: a.g === 'Urgent' ? 'Urgent' : 'Task', title: a.t, sub: (a.r ? nm(a.r) : 'Manager') + ' · Due ' + a.due, to: a.t === 'Submit interview feedback' ? 'feedback' : 'actions' })),
     ...S.I.filter((i) => i.d === 0 && i.st === 'Scheduled').map((i) => ({ k: 'i' + i.id, kind: 'Task', title: 'Interview today · ' + i.t, sub: S.rn(i.rid) + ' · ' + i.rd, to: 'interviews' })),
     ...S.L.slice(0, 5).map((l) => ({ k: 'l' + l.t, kind: 'Activity', title: l.what, sub: l.ref + ' · ' + ago(l.t), to: 'log' })),
   ];

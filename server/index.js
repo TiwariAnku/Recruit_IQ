@@ -5,6 +5,8 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import { feedbackRouter } from './feedback.js';
+import { analyze } from './analyzer.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Uploaded CVs are stored here:  server/uploads/resumes
@@ -41,12 +43,14 @@ app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // view a CV: GET /uploads/resumes/<file>
 
+app.use('/api/feedback', feedbackRouter); // interview feedback history
 app.get('/api/health', (_req, res) => res.json({ ok: true, service: 'recruitiq-api' }));
 
-app.post('/api/resumes/upload', upload.array('resumes', 20), (req, res) => {
-  const files = (req.files || []).map((f) => ({
+app.post('/api/resumes/upload', upload.array('resumes', 20), async (req, res) => {
+  const files = await Promise.all((req.files || []).map(async (f) => ({
     name: f.originalname, url: `/uploads/resumes/${f.filename}`, mime: f.mimetype, size: f.size, uploadedAt: new Date().toISOString(),
-  }));
+    analysis: await analyze(f.path).catch(() => null), // real content check: blank / not a resume / skills / experience / education
+  })));
   writeIndex([...files, ...readIndex()]);
   res.status(201).json({ files });
 });

@@ -1,4 +1,5 @@
-import { HRS, ST, POS, COL } from '../data/mockData';
+import { HRS, ST, COL } from '../data/mockData';
+import { RecPill } from '../components/FeedbackDetail';
 import { nm, go } from '../utils/helpers';
 import { useS } from '../context/StoreContext';
 import {
@@ -81,12 +82,12 @@ export default function Dashboard() {
   const anim = (n) => ({ animationDelay: n * 60 + 'ms' });
 
   const KPIS = [
-    { l: 'Open Positions', v: POS.length, to: 'manager', Icon: Briefcase, tint: '#4A7BB0' },
+    { l: 'Open Positions', v: S.P.filter((p) => p.status === 'Open').length, to: 'positions', Icon: Briefcase, tint: '#4A7BB0' },
     { l: 'Resumes Received', v: R.length, to: 'resumes', Icon: FileText, tint: '#A8764F' },
     { l: 'Under Review', v: c('New') + c('Screening'), to: 'resumes', Icon: Search, tint: '#C27A1E' },
     { l: 'Shortlisted', v: c('Shortlisted'), to: 'resumes', Icon: UserCheck, tint: '#7C62B3' },
     { l: 'Interviews', v: I.filter((i) => i.st == 'Scheduled').length, to: 'interviews', Icon: CalendarDays, tint: '#4A7BB0' },
-    { l: 'Feedback Pending', v: fbn, to: 'actions', Icon: ClipboardList, tint: '#C4513F' },
+    { l: 'Feedback Pending', v: S.I.filter((i) => i.st == 'Completed' && i.fb == 'Pending').length, to: 'feedback', Icon: ClipboardList, tint: '#C4513F' },
     { l: 'Selected', v: c('Selected'), to: 'resumes', Icon: Trophy, tint: '#3F8F66' },
   ];
 
@@ -103,7 +104,7 @@ export default function Dashboard() {
           </p>
         </div>
         <div className="relative z-10 flex flex-wrap gap-3">
-          {[[fbn, 'Urgent follow-ups', 'actions'], [todays.length, 'Interviews today', 'interviews']].map(([n, t, to]) => (
+          {[[S.I.filter((i) => i.st == 'Completed' && i.fb == 'Pending').length, 'Feedback pending', 'feedback'], [todays.length, 'Interviews today', 'interviews']].map(([n, t, to]) => (
             <button key={t} type="button" onClick={() => go(to)} className={`${FOCUS} flex min-w-[132px] cursor-pointer flex-col items-start gap-0.5 rounded-[14px] border border-white/15 bg-white/10 px-4 py-3 text-left font-[inherit] text-[#F7EBDD] transition hover:-translate-y-0.5 hover:border-nude-300/60 hover:bg-white/20`}>
               <b className="font-display text-3xl font-semibold leading-none">{n}</b>
               <span className="text-xs text-[#CDBFAF]">{t}</span>
@@ -186,6 +187,18 @@ export default function Dashboard() {
               <span className="text-right text-ink-muted"><b className="text-base text-ink">{hrCounts[idx]}</b> resumes</span>
             </button>
           ))}
+        </div>
+
+        {/* Latest interview feedback */}
+        <div className={`${CARD} col-span-12 px-6 py-[22px]`}>
+          <PanelHead title="Latest Interview Feedback" sub="Most recent scorecards from the feedback history" to="feedback" />
+          {S.FB.slice(0, 4).map((f) => (
+            <div key={f.id} className="flex flex-wrap items-center justify-between gap-3 border-t border-cream-200 py-3 first:border-0">
+              <div className="min-w-0"><b className="text-ink">{f.candidate}</b> <span className="text-ink-muted">· {f.position} · {f.round}</span>
+                <div className="truncate text-[13px] text-ink-muted">{f.strengths}</div></div>
+              <div className="flex items-center gap-3"><span className="font-semibold text-ink">★ {f.overall.toFixed(1)}</span><RecPill v={f.recommendation} /><span className="text-xs text-ink-muted">{f.submittedBy}</span></div>
+            </div>))}
+          {!S.FB.length && <Empty Icon={ClipboardList} title="No feedback yet" sub="Submitted interview feedback appears here." />}
         </div>
       </section>
     </div>

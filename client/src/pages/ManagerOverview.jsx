@@ -1,5 +1,6 @@
 import { Layers, Trophy, Zap, CalendarDays, AlertTriangle, CheckCircle2 } from 'lucide-react';
-import { HRS, POS } from '../data/mockData';
+import { HRS } from '../data/mockData';
+import { REC_COLOR } from '../utils/feedbackStore';
 import { stat, ago, go } from '../utils/helpers';
 import { useS } from '../context/StoreContext';
 import KpiCard from '../components/KpiCard';
@@ -8,6 +9,8 @@ import { Section, TH, TD } from '../components/ui';
 
 export default function ManagerOverview() {
   const S = useS(), { R } = S;
+  const POS = S.P.filter((p) => p.status === 'Open').map((p) => p.title);
+  const fbs = S.FB, avg = fbs.length ? fbs.reduce((a, f) => a + f.overall, 0) / fbs.length : 0, pendingFb = S.I.filter((i) => i.st === 'Completed' && i.fb === 'Pending').length;
   const live = ['Shortlisted', 'Interview', 'Feedback Pending', 'Selected'];
   const attention = POS.filter((p) => !R.some((r) => r.pos == p && live.includes(r.st)));
   return (
@@ -35,6 +38,14 @@ export default function ManagerOverview() {
         </Section>
         <Section title="Recent activity" to="log">
           {S.L.slice(0, 5).map((l, i) => <div key={i} className="flex items-center justify-between gap-3 border-t border-cream-200 py-2.5 first:border-0"><span className="text-ink">{l.what} <span className="text-ink-muted">· {l.ref}</span></span><span className="whitespace-nowrap text-xs text-ink-muted">{ago(l.t)}</span></div>)}
+        </Section>
+        <Section title="Interview feedback" sub="Quality and outcome of hiring decisions" to="feedback">
+          <div className="mb-4 grid grid-cols-3 gap-3 text-center">
+            {[['Average rating', avg ? avg.toFixed(1) : '–'], ['On record', fbs.length], ['Pending', pendingFb]].map(([l, v]) => <div key={l} className="rounded-xl bg-cream-50 py-3"><b className="block font-display text-3xl font-semibold text-ink">{v}</b><span className="text-xs text-ink-muted">{l}</span></div>)}
+          </div>
+          {Object.entries(REC_COLOR).map(([k, c]) => { const n = fbs.filter((f) => f.recommendation === k).length; return (
+            <div key={k} className="mb-2.5 last:mb-0"><div className="mb-1 flex justify-between text-[13px]"><span className="font-medium" style={{ color: c }}>{k}</span><span className="text-ink-muted">{n}</span></div>
+              <div className="h-2 overflow-hidden rounded-full bg-[#F3EADC]"><div className="h-full rounded-full" style={{ width: (fbs.length ? (n / fbs.length) * 100 : 0) + '%', background: c }} /></div></div>); })}
         </Section>
       </div>
     </div>
