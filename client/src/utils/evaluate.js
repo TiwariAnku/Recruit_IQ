@@ -1,7 +1,7 @@
 // Compares a real resume analysis against a position's requirements (required / preferred skills, experience range).
 import { skillRegex, evidence } from './analyzerCore';
 
-const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const plural = (n, w) => { n = +Number(n).toFixed(1); return `${n} ${w}${n === 1 ? '' : 's'}`; };
 
 export function evaluate(a, pos) {
   if (!a || !a.valid || !pos) return null;

@@ -57,7 +57,11 @@ const Disclaimer = () => <div className="mt-3 flex gap-2 rounded-lg border-l-[3p
 
 function Analysis({ r }) {
   const S = useS(), a = r.analysis, pos = S.P.find((p) => p.title === r.pos);
-  if (!a) return <Card className="flex gap-3 p-5 text-ink-muted"><ScanText size={20} className="flex-none text-nude" /><span><b className="block text-ink">Not analysed yet</b>The analysis reads the text inside the file on the server. Start the server (<code>cd server && npm run dev</code>) and upload the file again.</span></Card>;
+  if (!a) return (
+    <Card className="flex gap-3 p-5 text-ink-muted"><ScanText size={20} className="flex-none text-nude" />
+      <span><b className="block text-ink">{S.busy ? 'Reading this resume…' : 'Not analysed yet'}</b>{S.busy || 'Reads the text inside the file – PDF, DOCX, and images (PNG/JPG via OCR) are supported.'}
+        {!S.busy && <Btn sm v="pr" className="mt-3" onClick={() => S.analyzeResume(r.id)}><Sparkles size={13} /> Analyse now</Btn>}</span></Card>
+  );
   if (!a.valid) return (
     <Card className="border-[#C4513F]/40 p-5">
       <div className="flex items-center gap-2 font-semibold text-[#C4513F]"><FileWarning size={18} /> {TITLE[a.verdict] || 'Invalid file'}</div>
@@ -87,7 +91,8 @@ function Analysis({ r }) {
       <Card className="p-5"><b className="text-ink">Required skills</b><div className="mt-1">{e.must.map((x) => <Req key={x.skill} x={x} />)}</div>
         {e.nice.length > 0 && <><b className="mt-4 block text-ink">Preferred skills</b><div className="mt-1">{e.nice.map((x) => <Req key={x.skill} x={x} />)}</div></>}</Card>
       <Card className="grid gap-3 p-5 sm:grid-cols-2">{info.map(([I, l, v]) => <div key={l} className="flex items-start gap-2.5"><I size={16} className="mt-0.5 flex-none text-nude-dark" /><div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-ink-muted">{l}</div><div className={`truncate ${v ? 'text-ink' : 'text-ink-muted'}`}>{v || 'Not found'}</div></div></div>)}
-        <p className="text-xs text-ink-muted sm:col-span-2">Experience fit: {e.expNote}.</p></Card>
+        <p className="text-xs text-ink-muted sm:col-span-2">Experience fit: {e.expNote}.</p>
+        {a.source === 'ocr' && <p className="rounded-lg bg-[#C27A1E]/10 p-2.5 text-xs text-[#6b4a1c] sm:col-span-2">This resume is an image / scanned file, so its text was read with OCR{a.confidence ? ` (confidence ${a.confidence}%)` : ''}. Double-check names and numbers against the original.</p>}</Card>
       {extra.length > 0 && <Card className="p-5"><b className="text-ink">Other skills found</b><div className="mt-1">{extra.map((k) => <span key={k} className="m-0.5 inline-block rounded-lg bg-cream-100 px-2.5 py-0.5 text-xs text-ink-body">{k}</span>)}</div></Card>}
       {a.reasons.length > 0 && <Card className="p-5"><b className="text-ink">Document notes</b><ul className="mt-2 list-disc space-y-1 pl-5 text-ink-muted">{a.reasons.map((x) => <li key={x}>{x}</li>)}</ul></Card>}
       <Card className="p-5"><b className="text-ink">AI Content Indicator:</b> <StatusBadge v={a.ai.level} /><ul className="mt-2 list-disc space-y-1 pl-5 text-ink-muted">{a.ai.signals.map((x) => <li key={x}>{x}</li>)}</ul><Disclaimer /></Card>

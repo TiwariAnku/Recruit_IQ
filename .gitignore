@@ -5,3 +5,4 @@ server/uploads/resumes/*
 !server/uploads/resumes/.gitkeep
 server/data/uploads.json
 server/data/feedback.json
+client/public/ocr

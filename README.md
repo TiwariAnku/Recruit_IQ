@@ -39,3 +39,10 @@ If the server is not running, uploads still work for the current session only (a
 - Match = 70% required skills + 15% preferred skills + 15% experience fit (30% experience when no preferred skills are set).
 - Uploads are assigned to the best-fitting OPEN position automatically; demo resumes carry real text so their analysis is real too.
 - Feedback is connected everywhere: Dashboard, Resumes table + drawer (Feedback tab), Interviews, Action Center, Handover, Manager Overview, Sidebar badge, Notifications. Choosing "Select candidate" creates an "Approve offer" task for the manager.
+
+## Reading real resume files (PDF / scanned PDF / PNG / JPG / DOCX)
+- Analysis runs **in the browser** (`client/src/utils/extractText.js`), so it works even when the server is not running:
+  PDF text layer via pdf.js, scanned PDFs and images via OCR (tesseract.js), DOCX via mammoth. The same rules as the server (`analyzerCore.js`) are applied.
+- When the server is running, text PDFs/DOCX are analysed there first; images and scanned files fall back to the browser OCR.
+- `npm install` in `client/` copies the OCR engine + English data into `client/public/ocr` (git-ignored). Re-run `npm install` after pulling this update.
+- Experience is calculated per month (e.g. an internship Oct 2024 – Feb 2025 = 0.3 years), education dates are never counted as work.

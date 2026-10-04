@@ -7,11 +7,12 @@ const PHRASE = { 'C#': 'C#', '.NET': '.NET Core and ASP.NET', SQL: 'SQL queries 
 const COMPANIES = ['Infosys', 'TCS', 'Wipro', 'Accenture', 'Capgemini'];
 // Builds a plain-text resume from a demo candidate so the analyser has real content to read
 export const resumeText = (r) => {
+  const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][new Date().getMonth()];
   const name = r.n.replace(/\.\w+$/, '').split('_').slice(0, 2).join(' '), y = new Date().getFullYear(), co = COMPANIES[r.id % 5];
   const sk = r.sk.map((k) => PHRASE[k] || k), phone = '+91 98' + String(1000 + r.id * 37).padStart(4, '0') + String(5000 + r.id * 13);
   return [name, `${name.toLowerCase().replace(' ', '.')}@gmail.com | ${phone} | Mumbai`, '',
     'Summary', `${r.pos} with ${r.exp} years of experience delivering dependable solutions for business teams. Hands-on with ${sk.join(', ')}.`, '',
-    'Experience', `${r.pos}, ${co}   Jan ${y - r.exp} - Present`, `Worked with ${sk.join(', ')} to deliver features on time and reduced turnaround by 25%.`, 'Collaborated with product owners and mentored two junior team members.', '',
+    'Experience', `${r.pos}, ${co}   ${MON} ${y - r.exp} - Present`, `Worked with ${sk.join(', ')} to deliver features on time and reduced turnaround by 25%.`, 'Collaborated with product owners and mentored two junior team members.', '',
     'Education', `B.Tech in Computer Science, University of Mumbai, ${y - r.exp - 4} - ${y - r.exp}`, '',
     'Skills', r.sk.join(', ')].join('\n');
 };

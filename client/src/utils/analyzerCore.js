@@ -24,15 +24,19 @@ export function evidence(text, name) {
   return '…' + text.slice(Math.max(0, i - 50), i + name.length + 50).replace(/\s+/g, ' ').trim() + '…';
 }
 
+const MONTHS = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
 function yearsOfExperience(full) {
+  // education lines are ignored so a degree (2018 - 2022) is never counted as work experience
   const text = full.split('\n').filter((l) => !/(b\.?\s?tech|b\.e\b|b\.?\s?sc|bca|bachelor|master|m\.?\s?tech|mba|mca|university|college|school|degree|diploma|ph\.?d|hsc|ssc|cgpa)/i.test(l)).join('\n');
-  const thisYear = new Date().getFullYear();
+  const now = new Date(), nowM = now.getFullYear() * 12 + now.getMonth() + 1, mon = (s) => MONTHS[(s || '').toLowerCase().slice(0, 3)];
   const explicit = [...text.matchAll(/(\d{1,2})\s*\+?\s*(?:years?|yrs?)(?:\s+of)?\s+(?:[\w-]+\s+){0,3}experience/gi)].map((m) => +m[1]);
-  const spans = [...text.matchAll(/(?:[A-Za-z]{3,9}\.?\s+)?((?:19|20)\d{2})\s*(?:-|–|—|to)\s*(?:[A-Za-z]{3,9}\.?\s+)?((?:19|20)\d{2}|present|current|till date|now)\b/gi)]
-    .map((m) => [+m[1], /^\d/.test(m[2]) ? +m[2] : thisYear]).filter(([a, b]) => b >= a && b - a < 40).sort((x, y) => x[0] - y[0]);
+  const spans = [...text.matchAll(/(?:([A-Za-z]{3,9})\.?\s+)?((?:19|20)\d{2})\s*(?:-|–|—|to)\s*(?:([A-Za-z]{3,9})\.?\s+)?((?:19|20)\d{2}|present|current|till date|now)\b/gi)].map((m) => {
+    const start = +m[2] * 12 + (mon(m[1]) || 1), end = /^\d/.test(m[4]) ? +m[4] * 12 + (mon(m[3]) || mon(m[1]) || 1) : nowM;
+    return [start, Math.min(end, nowM)];
+  }).filter(([a, b]) => b >= a && b - a < 40 * 12).sort((x, y) => x[0] - y[0]);
   let total = 0, end = -1;
   for (const [a, b] of spans) { const s = Math.max(a, end); if (b > s) total += b - s; end = Math.max(end, b); }
-  return Math.min(Math.max(total, ...explicit, 0), 40);
+  return Math.min(Math.max(+(total / 12).toFixed(1), ...explicit, 0), 40);
 }
 function education(text) {
   if (/\bPh\.?\s?D\b|\bDoctorate\b/.test(text)) return 'Doctorate (PhD)';
